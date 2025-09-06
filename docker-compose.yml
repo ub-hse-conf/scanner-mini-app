@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   scanner-app:
+    image: beeshnik/scanner-app
     deploy: 
       mode: global
       restart-policy: on-failure
