@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   scanner-app:
-    image: ${IMAGE_TAG:-ghcr.io/ub-hse-conf/scanner-mini-app:stable}
+    image: scanner-mini-app
     deploy: 
       mode: global
       restart_policy:
