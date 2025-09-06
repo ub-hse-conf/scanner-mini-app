@@ -1,5 +1,5 @@
 import {type ReactNode, useState} from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 
 type accordionProps = {
@@ -25,7 +25,7 @@ export function Accordion({children, name}:accordionProps) {
                 <p>
                     {name} 
                     {' '}
-                    {expanded ? <FaChevronUp /> : <FaChevronDown />}
+                    {expanded ? <ChevronUp /> : <ChevronDown />}
                 </p>
             </div>
             {expanded && (
