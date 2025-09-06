@@ -2,26 +2,24 @@ version: '3.8'
 
 services:
   scanner-app:
+    deploy: 
+      mode: global
+      restart-policy: on-failure
     build:
       context: .
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
-    container_name: scanner-mini-app
-    ports:
-      - "${PORT:-3000}:80"
-    restart: unless-stopped
     environment:
       - NODE_ENV=production
-    networks:
-      - scanner-network
+    ports:
+      - published: 3000
+        target: 80
+        protocol: tcp
+        mode: ingress
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-
-networks:
-  scanner-network:
-    driver: bridge
