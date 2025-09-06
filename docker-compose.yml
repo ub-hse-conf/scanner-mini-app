@@ -5,7 +5,8 @@ services:
     image: beeshnik/scanner-app
     deploy: 
       mode: global
-      restart-policy: on-failure
+      restart_policy:
+        condition: on-failure
     build:
       context: .
       dockerfile: Dockerfile
