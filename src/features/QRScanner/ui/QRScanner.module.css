@@ -1,0 +1,13 @@
+
+
+.qrvideo {
+    width: 50vw;
+    height: auto;
+    max-height: 50vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
