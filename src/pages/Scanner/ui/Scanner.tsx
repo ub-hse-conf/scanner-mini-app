@@ -1,6 +1,8 @@
 import {useNavigate, useParams} from "react-router";
 import { useEffect, useRef, useState } from 'react';
 import {QRScanner} from "../../../features/QRScanner";
+import styles from "./Scanner.module.css"
+import {Button} from "../../../shared/ui/Button";
 
 export function Scanner(){
 
@@ -16,7 +18,7 @@ export function Scanner(){
     }, [params])
 
     const handleScanSuccess = async (qrData) => {
-        console.log(`Отсканировано: ${qrData}`);
+        alert(`Отсканировано: ${qrData}`)
 
         // try {
         //     // Отправляем асинхронный запрос на бэкенд
@@ -45,16 +47,17 @@ export function Scanner(){
 
 
     return (
-        <div>
+        <div className={styles.container}>
             {activity && <h1 style={{color: "red"}}>{activity}</h1>}
-            <br/>
-            <QRScanner onScanSuccess={handleScanSuccess} />
-
-            <button
-                onClick={() => {navigate(-1)}}
+            <Button
+                onClick={() => {
+                    navigate(-1)
+                }}
             >
                 {`<- Go back`}
-            </button>
+            </Button>
+            <br/>
+            <QRScanner onScanSuccess={handleScanSuccess}/>
         </div>
     )
 }
