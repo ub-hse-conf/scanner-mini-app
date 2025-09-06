@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import QrScanner from 'qr-scanner';
+import styles from "./QRScanner.module.css"
 
 export function QRScanner({ onScanSuccess }){
     const videoRef = useRef(null);
     const qrScannerRef = useRef(null);
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-    const [isProcessing, setIsProcessing] = useState(false); // Чтобы не обрабатывать несколько кодов сразу
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [debugConsole, setDebugConsole] = useState("");
 
     useEffect(() => {
         if (!videoRef.current) return;
@@ -16,6 +18,7 @@ export function QRScanner({ onScanSuccess }){
                 if (isProcessing) return; // Если уже обрабатываем предыдущий код, игнорируем новый
                 setIsProcessing(true);
                 console.log('Decoded qr code:', result.data);
+                setDebugConsole(debugConsole + `\n` + 'Decoded qr code:' + `${result.data}`)
 
                 onScanSuccess(result.data)
                     .then(() => {
@@ -23,6 +26,7 @@ export function QRScanner({ onScanSuccess }){
                     })
                     .catch((err) => {
                         console.error('Ошибка при обработке QR-кода:', err);
+                        setDebugConsole(debugConsole + `\n` + 'Ошибка при обработке QR-кода:' + `${err}`)
                         setIsProcessing(false);
                     });
             },
@@ -39,6 +43,7 @@ export function QRScanner({ onScanSuccess }){
                 await qrScannerRef.current.start();
                 setHasPermission(true);
             } catch (err) {
+                setDebugConsole(debugConsole + `\n` + 'Ошибка доступа к камере:' + `${err}`)
                 console.error('Ошибка доступа к камере:', err);
                 setHasPermission(false);
             }
@@ -64,18 +69,22 @@ export function QRScanner({ onScanSuccess }){
     }
 
     return (
-        <div className="scanner-container">
-            <video
-                ref={videoRef}
-                className="qr-video"
-                style={{ width: '100%', height: 'auto', maxHeight: '70vh' }}
-            ></video>
+        <>
+            <div className={styles.container}>
+                <video
+                    ref={videoRef}
+                    className={styles.qrvideo}
+                ></video>
 
-            {isProcessing && (
-                <div className="processing-overlay">
-                    <p>Обработка QR-кода...</p>
-                </div>
-            )}
-        </div>
+                {isProcessing && (
+                    <div className="processing-overlay">
+                        <p>Обработка QR-кода...</p>
+                    </div>
+                )}
+            </div>
+            <div>
+                {debugConsole}
+            </div>
+        </>
     );
 }
