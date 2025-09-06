@@ -57,7 +57,7 @@ export function Scanner(){
             >
                 <MoveLeft />
                 {" "}
-                {`Go back`}
+                {`Назад`}
             </Button>
             <br/>
             <QRScanner onScanSuccess={handleScanSuccess}/>
