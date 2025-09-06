@@ -1,12 +1,18 @@
-import './App.css';
+import Routers from "./routers";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {SnackbarProvider} from "notistack";
+
 
 const App = () => {
-  return (
-    <div className="content">
-      <h1>Rsbuild with React</h1>
-      <p>Start building amazing things with Rsbuild.</p>
-    </div>
-  );
+
+    const query = new QueryClient();
+
+    return (
+        <QueryClientProvider client={query}>
+            <SnackbarProvider />
+            <Routers />
+        </QueryClientProvider>
+    );
 };
 
 export default App;

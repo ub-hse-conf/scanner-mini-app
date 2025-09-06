@@ -1,0 +1,14 @@
+
+:root {
+    --color-red-primary: #f44336;
+    --color-orange-primary: #ff9800;
+    --color-yellow-primary: #ffeb3b;
+    --color-green-primary: #4caf50;
+    --color-blue-primary: #03a9f4;
+    --color-darkblue-primary: #2979ff;
+    --color-violet-primary: #673ab7;
+
+    user-select: none;
+    font-family: "Gill Sans", sans-serif;
+}
+
