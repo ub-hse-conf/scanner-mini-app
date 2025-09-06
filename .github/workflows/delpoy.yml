@@ -80,6 +80,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd scanner-mini-app
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             echo "Running on ${{needs.build-image.outputs.tag}} environment"
             ./deploy.sh "${{needs.build-image.outputs.tag}}"
 
