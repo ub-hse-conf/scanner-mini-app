@@ -1,5 +1,6 @@
 import {useNavigate, useParams} from "react-router";
 import { useEffect, useRef, useState } from 'react';
+import { MoveLeft } from 'lucide-react';
 import {QRScanner} from "../../../features/QRScanner";
 import styles from "./Scanner.module.css"
 import {Button} from "../../../shared/ui/Button";
@@ -54,7 +55,9 @@ export function Scanner(){
                     navigate(-1)
                 }}
             >
-                {`<- Go back`}
+                <MoveLeft />
+                {" "}
+                {`Go back`}
             </Button>
             <br/>
             <QRScanner onScanSuccess={handleScanSuccess}/>
