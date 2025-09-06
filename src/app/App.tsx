@@ -8,10 +8,12 @@ const App = () => {
     const query = new QueryClient();
 
     return (
-        <QueryClientProvider client={query}>
-            <SnackbarProvider />
-            <Routers />
-        </QueryClientProvider>
+        <SnackbarProvider>
+            <QueryClientProvider client={query}>
+                <SnackbarProvider />
+                <Routers />
+            </QueryClientProvider>
+        </ SnackbarProvider >
     );
 };
 

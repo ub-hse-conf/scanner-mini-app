@@ -1,32 +1,57 @@
 import { useEffect, useRef, useState } from 'react';
 import QrScanner from 'qr-scanner';
 import styles from "./QRScanner.module.css"
+import { VideoOff } from 'lucide-react';
 
 export function QRScanner({ onScanSuccess }){
     const videoRef = useRef(null);
     const qrScannerRef = useRef(null);
+    const timerId = useRef(-1);
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [debugConsole, setDebugConsole] = useState("");
+    const [isCameraOn, setIsCameraOn] = useState(true);
+    const activeCameraTimer = 30000;
 
-    useEffect(() => {
-        if (!videoRef.current) return;
+    function restartTimer() {
+        if (timerId.current > 0) {
+            clearTimeout(timerId.current);
+        }
+        setIsCameraOn(true);
+        timerId.current = setTimeout(() => {
+            stopScanner();
+            setIsCameraOn(false);
+        }, activeCameraTimer);
+    }
+
+    function stopScanner() {
+        if (qrScannerRef.current) {
+            qrScannerRef.current.stop();
+            qrScannerRef.current.destroy();
+            qrScannerRef.current = null;
+        }
+    }
+
+    function bindCamera() {
+        if (!videoRef.current) {
+            console.error('Video element is not available');
+            return;
+        }
+
+        stopScanner();
 
         qrScannerRef.current = new QrScanner(
             videoRef.current,
             (result) => {
-                if (isProcessing) return; // Если уже обрабатываем предыдущий код, игнорируем новый
+                if (isProcessing) return;
                 setIsProcessing(true);
                 console.log('Decoded qr code:', result.data);
-                setDebugConsole(debugConsole + `\n` + 'Decoded qr code:' + `${result.data}`)
-
+                restartTimer()
                 onScanSuccess(result.data)
                     .then(() => {
                         setIsProcessing(false);
                     })
                     .catch((err) => {
                         console.error('Ошибка при обработке QR-кода:', err);
-                        setDebugConsole(debugConsole + `\n` + 'Ошибка при обработке QR-кода:' + `${err}`)
                         setIsProcessing(false);
                     });
             },
@@ -36,29 +61,42 @@ export function QRScanner({ onScanSuccess }){
                 preferredCamera: 'environment',
             }
         );
+    }
 
-
-        const startScanner = async () => {
-            try {
+    async function startScanner() {
+        try {
+            if (qrScannerRef.current) {
                 await qrScannerRef.current.start();
                 setHasPermission(true);
-            } catch (err) {
-                setDebugConsole(debugConsole + `\n` + 'Ошибка доступа к камере:' + `${err}`)
-                console.error('Ошибка доступа к камере:', err);
-                setHasPermission(false);
             }
-        };
-        startScanner();
+        } catch (err) {
+            console.error('Ошибка доступа к камере:', err);
+            setHasPermission(false);
+        }
+    }
 
-        // Остановка сканера при размонтировании компонента
+    useEffect(() => {
+        if (isCameraOn) {
+            bindCamera();
+            startScanner();
+        }
+
+        restartTimer();
+
         return () => {
-            if (qrScannerRef.current) {
-                qrScannerRef.current.stop();
-                qrScannerRef.current.destroy();
+            stopScanner();
+            if (timerId.current > 0) {
+                clearTimeout(timerId.current);
             }
         };
-    }, [onScanSuccess, isProcessing]); // Зависимости от колбэка и флага обработки
+    }, [onScanSuccess, isProcessing]);
 
+    const handleReactivateCamera = async () => {
+        restartTimer();
+        await new Promise(resolve => setTimeout(resolve, 100));
+        bindCamera();
+        startScanner();
+    };
 
     if (hasPermission === false) {
         return (
@@ -73,17 +111,21 @@ export function QRScanner({ onScanSuccess }){
             <div className={styles.container}>
                 <video
                     ref={videoRef}
-                    className={styles.qrvideo}
+                    className={isCameraOn ? styles.qrvideo : styles.hidden}
                 ></video>
 
-                {isProcessing && (
-                    <div className="processing-overlay">
-                        <p>Обработка QR-кода...</p>
+                {!isCameraOn && (
+                    <div
+                        onClick={handleReactivateCamera}
+                        className={styles.qrvideo}
+                    >
+                        <VideoOff
+                            className={styles.cameraIcon}
+                        />
+                        <h3>Камера выключена</h3>
+                        <h3>Нажмите, чтобы включить снова</h3>
                     </div>
                 )}
-            </div>
-            <div>
-                {debugConsole}
             </div>
         </>
     );

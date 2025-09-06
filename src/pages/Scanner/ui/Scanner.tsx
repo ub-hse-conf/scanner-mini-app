@@ -4,6 +4,7 @@ import { MoveLeft } from 'lucide-react';
 import {QRScanner} from "../../../features/QRScanner";
 import styles from "./Scanner.module.css"
 import {Button} from "../../../shared/ui/Button";
+import {enqueueSnackbar} from "notistack";
 
 export function Scanner(){
 
@@ -19,7 +20,9 @@ export function Scanner(){
     }, [params])
 
     const handleScanSuccess = async (qrData) => {
-        alert(`Отсканировано: ${qrData}`)
+        enqueueSnackbar(`Отсканировано: ${qrData}`, {
+            autoHideDuration: 3000
+        })
 
         // try {
         //     // Отправляем асинхронный запрос на бэкенд
