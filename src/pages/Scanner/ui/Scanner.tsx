@@ -19,10 +19,16 @@ export function Scanner(){
         }
     }, [params])
 
-    const handleScanSuccess = async (qrData) => {
+    const handleScanSuccess = async (qrData: string) => {
         enqueueSnackbar(`Отсканировано: ${qrData}`, {
-            autoHideDuration: 3000
+            autoHideDuration: 3000,
+            variant: 'success',
         })
+
+        if (window.Telegram.WebApp) {
+            window.Telegram.WebApp.HapticFeedback.notificationOccurred("success")
+        }
+
 
         // try {
         //     // Отправляем асинхронный запрос на бэкенд
