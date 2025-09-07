@@ -11,7 +11,6 @@ export function QRScanner({ onScanSuccess }){
     const [isProcessing, setIsProcessing] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(true);
     const activeCameraTimer = 30000;
-    const scannerTimeout = 1000
 
     function restartTimer() {
         if (timerId.current > 0) {
@@ -22,12 +21,6 @@ export function QRScanner({ onScanSuccess }){
             stopScanner();
             setIsCameraOn(false);
         }, activeCameraTimer);
-    }
-
-    function freezeCamera(){
-        setTimeout(()=> {
-            setIsProcessing(false);
-        }, scannerTimeout)
     }
 
     function stopScanner() {

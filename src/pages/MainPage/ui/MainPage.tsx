@@ -1,14 +1,23 @@
-import {useNavigate} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {useGetActivity} from "../../../features/activity/api/GetActivity.ts";
 
 import styles from "./MainPage.module.css"
 import {Button} from "../../../shared/ui/Button";
 import {Accordion} from "../../../shared/ui/Accordion";
+import {useEffect} from "react";
 
 export function MainPage() {
 
     const navigate = useNavigate();
     const activities = useGetActivity()
+
+    const params = useParams();
+
+    useEffect(() => {
+        if(params) {
+            alert(`app launched with: ${JSON.stringify(params)}`)
+        }
+    }, [params])
 
     return (
         <div className={styles.container}>
