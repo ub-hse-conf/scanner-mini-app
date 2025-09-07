@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router";
+import {useNavigate, useSearchParams} from "react-router";
 import {useGetActivity} from "../../../features/activity/api/GetActivity.ts";
 
 import styles from "./MainPage.module.css"
@@ -11,13 +11,16 @@ export function MainPage() {
     const navigate = useNavigate();
     const activities = useGetActivity()
 
-    const params = useParams();
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        if(params) {
-            alert(`app launched with: ${JSON.stringify(params)}`)
+        if(searchParams) {
+            const cocken = searchParams.get('cocken')
+            if (cocken) {
+                alert(`App launched with cocken: ${cocken}`);
+            }
         }
-    }, [params])
+    }, [searchParams])
 
     return (
         <div className={styles.container}>
