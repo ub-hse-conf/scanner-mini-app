@@ -8,7 +8,6 @@ export const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        // Получаем логин и пароль В МОМЕНТ КАЖДОГО ЗАПРОСА
         const USERNAME = sessionStorage.getItem('login');
         const PASSWORD = sessionStorage.getItem('password');
 
@@ -16,7 +15,6 @@ api.interceptors.request.use(
             config.headers.Authorization = `Basic ${btoa(`${USERNAME}:${PASSWORD}`)}`;
         } else {
             console.warn('Логин или пароль отсутствуют в sessionStorage');
-            // Можно выбросить ошибку или обработать иначе
         }
 
         return config;
@@ -24,15 +22,15 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Интерцептор для обработки ошибок
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
             console.error('Ошибка авторизации: неверные учетные данные');
-            // Очищаем невалидные учетные данные
-            sessionStorage.removeItem('login');
-            sessionStorage.removeItem('password');
+            if (error.response?.headers) {
+                delete error.response.headers['www-authenticate'];
+            }
         } else if (error.response?.status === 403) {
             console.error('Доступ запрещен: недостаточно прав');
         }

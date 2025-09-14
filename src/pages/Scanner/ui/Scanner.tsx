@@ -42,7 +42,21 @@ export function Scanner(){
 
     useEffect(() => {
         if (isError) {
-            enqueueSnackbar(`Пользователь не добавлен!`, {
+
+            let messge = `Ошибка!`
+
+            if (registerError) {
+                const status = registerError?.response?.status;
+
+                if (status && status === 409) {
+                    messge += " Пользователь уже зарегистрирован"
+                }
+                else if (status && status === 404 || status && status === 400) {
+                    messge += " Пользователь не найден"
+                }
+            }
+
+            enqueueSnackbar(messge, {
                 autoHideDuration: 3000,
                 variant: 'error',
             })
@@ -51,7 +65,6 @@ export function Scanner(){
                 window.Telegram.WebApp.HapticFeedback.notificationOccurred("error")
             }
 
-            console.error(registerError);
         }
 
 
@@ -71,12 +84,16 @@ export function Scanner(){
     }, [isSuccess]);
 
     const handleScanSuccess = async (qrData: string) => {
-        
-        if (activityId) {
+
+        if (activityId && qrData.toLowerCase().startsWith("unu")) {
+            console.log("Отправляем на бэк")
             await register({
                 userCode: qrData,
                 activityId: activityId
             })
+        }
+        else {
+            console.log("Не отправляем на бэк")
         }
     };
 
