@@ -93,7 +93,10 @@ export function Scanner(){
             })
         }
         else {
-            console.log("Не отправляем на бэк")
+            enqueueSnackbar(`Данный код не поддерживается`, {
+                autoHideDuration: 3000,
+                variant: "default",
+            })
         }
     };
 
