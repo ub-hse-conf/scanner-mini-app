@@ -26,7 +26,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-        "complexity": ["warn", 3],
+        "complexity": ["warn", 16],
         "@stylistic/indent": ["warn", 4],
         '@stylistic/jsx-closing-bracket-location': [1, 'line-aligned'],
         "@stylistic/jsx-one-expression-per-line": ["warn", { "allow": "single-child" }],

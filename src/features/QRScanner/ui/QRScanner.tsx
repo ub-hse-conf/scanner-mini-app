@@ -10,7 +10,7 @@ export function QRScanner({ onScanSuccess }){
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(true);
-    const activeCameraTimer = 30000;
+    const activeCameraTimer = 130000;
 
     function restartTimer() {
         if (timerId.current > 0) {
@@ -44,7 +44,6 @@ export function QRScanner({ onScanSuccess }){
             (result) => {
                 if (isProcessing) return;
                 setIsProcessing(true);
-                console.log('Decoded qr code:', result.data);
                 restartTimer()
                 onScanSuccess(result.data)
                     .then(() => {
@@ -59,7 +58,7 @@ export function QRScanner({ onScanSuccess }){
                 highlightScanRegion: true,
                 highlightCodeOutline: true,
                 preferredCamera: 'environment',
-                maxScansPerSecond: 0.5,
+                maxScansPerSecond: 1,
             }
         );
     }
