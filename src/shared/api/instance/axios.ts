@@ -2,7 +2,7 @@ import axios from 'axios';
 import { btoa } from 'js-base64';
 
 export const api = axios.create({
-    baseURL: '/api',
+    baseURL: process.env.NODE_ENV === 'development' ? '/api' : '',
     timeout: 10000,
 });
 
