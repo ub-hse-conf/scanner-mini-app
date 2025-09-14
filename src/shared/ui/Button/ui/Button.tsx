@@ -9,17 +9,17 @@ type props = {
 
 export function Button({children, color, ...props}: props) {
 
-    let textColor: color;
+    const textColor: color = "white";
 
     if (!color) {
         color = "blue"
     }
-    if (["green", "blue", "violet", "red", "darkblue"].includes(color)) {
-        textColor = "white"
-    }
-    else {
-        textColor = "black"
-    }
+    // if (["green", "blue", "violet", "red", "darkblue"].includes(color)) {
+    //     textColor = "white"
+    // }
+    // else {
+    //     textColor = "black"
+    // }
     return (
         <button
             {...props}

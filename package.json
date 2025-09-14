@@ -6,11 +6,14 @@
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev --open",
-    "preview": "rsbuild preview"
+    "preview": "rsbuild preview",
+    "generate-api": "npx openapi-typescript-codegen --input openapi.json --output src/shared/api/generated --client axios"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.87.1",
-    "@types/telegram-web-app": "^9.0.0",
+    "@tanstack/react-query-devtools": "^5.87.4",
+    "axios": "^1.12.1",
+    "js-base64": "^3.7.8",
     "lucide-react": "^0.542.0",
     "notistack": "^3.0.2",
     "qr-scanner": "^1.4.2",
@@ -19,7 +22,8 @@
     "react-icons": "^5.5.0",
     "react-qr-barcode-scanner": "^2.1.8",
     "react-router": "^7.8.2",
-    "react-router-dom": "^7.8.2"
+    "react-router-dom": "^7.8.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
@@ -28,6 +32,7 @@
     "@stylistic/eslint-plugin": "^5.3.1",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
+    "@types/telegram-web-app": "^9.0.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",

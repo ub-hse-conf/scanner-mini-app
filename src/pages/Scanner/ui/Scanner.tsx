@@ -5,71 +5,106 @@ import {QRScanner} from "../../../features/QRScanner";
 import styles from "./Scanner.module.css"
 import {Button} from "../../../shared/ui/Button";
 import {enqueueSnackbar} from "notistack";
+import {useGetActivityById, useRegisterUser} from "../../../features/activity";
+import {Loading} from "../../../shared/ui/Loading";
+import {Error as ErrorComponent} from "../../../shared/ui/Error";
 
 export function Scanner(){
 
     const navigate = useNavigate();
     const params = useParams();
-    const [activity, setActivity] = useState<string>();
+    const [activityName, setActivityName] = useState<string>();
+    const [activityId, setActivityId] = useState<number>();
+    const {
+        mutate: register,
+        isError,
+        isSuccess,
+        error: registerError,
+    } = useRegisterUser()
+    const {
+        data: activity,
+        isError: isActivityError,
+        isLoading: isActivityLoading
+    } = useGetActivityById(activityId)
 
 
     useEffect(() => {
         if (params.activity) {
-            setActivity(params.activity);
+            setActivityId(Number(params.activity));
         }
     }, [params])
 
-    const handleScanSuccess = async (qrData: string) => {
-        enqueueSnackbar(`Отсканировано: ${qrData}`, {
-            autoHideDuration: 3000,
-            variant: 'success',
-        })
+    useEffect(() => {
+        if (activity) {
+            setActivityName(activity.name);
+        }
+    }, [activity]);
 
-        if (window.Telegram.WebApp) {
-            window.Telegram.WebApp.HapticFeedback.notificationOccurred("success")
+    useEffect(() => {
+        if (isError) {
+            enqueueSnackbar(`Пользователь не добавлен!`, {
+                autoHideDuration: 3000,
+                variant: 'error',
+            })
+
+            if (window.Telegram.WebApp) {
+                window.Telegram.WebApp.HapticFeedback.notificationOccurred("error")
+            }
+
+            console.error(registerError);
         }
 
 
-        // try {
-        //     // Отправляем асинхронный запрос на бэкенд
-        //     const response = await fetch('https://your-backend.com/api/scan', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(scanData),
-        //     });
-        //
-        //     if (!response.ok) {
-        //         throw new Error(`Ошибка HTTP: ${response.status}`);
-        //     }
-        //
-        //     const result = await response.json();
-        //     console.log('Данные успешно отправлены на сервер:', result);
-        //
-        //     // Можно показать краткое уведомление об успехе (например, через toast-либу)
-        //     // toast.success('Участник успешно отсканирован!');
-        //
-        // } catch (error) {
-        //     console.error('Ошибка при отправке данных:', error);
-        // }
+    }, [isError]);
+
+    useEffect(() => {
+        if (isSuccess){
+            enqueueSnackbar(`Пользователь добавлен!`, {
+                autoHideDuration: 3000,
+                variant: 'success',
+            })
+
+            if (window.Telegram.WebApp) {
+                window.Telegram.WebApp.HapticFeedback.notificationOccurred("success")
+            }
+        }
+    }, [isSuccess]);
+
+    const handleScanSuccess = async (qrData: string) => {
+        
+        if (activityId) {
+            register({
+                userCode: qrData,
+                activityId: activityId
+            })
+        }
     };
 
 
     return (
-        <div className={styles.container}>
-            {activity && <h1 style={{color: "red"}}>{activity}</h1>}
-            <Button
-                onClick={() => {
-                    navigate(-1)
-                }}
-            >
-                <MoveLeft />
-                {" "}
-                {`Назад`}
-            </Button>
-            <br/>
-            <QRScanner onScanSuccess={handleScanSuccess}/>
-        </div>
+        <>
+            {
+                isActivityLoading ?
+                    <Loading />
+                    :
+                    isActivityError ?
+                        <ErrorComponent />
+                        :
+                        <div className={styles.container}>
+                            {activityName && <h1 style={{color: "red"}}>{activityName}</h1>}
+                            <Button
+                                onClick={() => {
+                                    navigate(-1)
+                                }}
+                            >
+                                <MoveLeft/>
+                                {" "}
+                                {`Назад`}
+                            </Button>
+                            <br/>
+                            <QRScanner onScanSuccess={handleScanSuccess}/>
+                        </div>
+            }
+        </>
     )
 }
