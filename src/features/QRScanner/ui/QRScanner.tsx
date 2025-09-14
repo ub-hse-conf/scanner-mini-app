@@ -3,7 +3,7 @@ import QrScanner from 'qr-scanner';
 import styles from "./QRScanner.module.css"
 import { VideoOff } from 'lucide-react';
 
-export function QRScanner({ onScanSuccess }){
+export function QRScanner({ onScanSuccess }) {
     const videoRef = useRef(null);
     const qrScannerRef = useRef(null);
     const timerId = useRef(-1);
@@ -12,45 +12,38 @@ export function QRScanner({ onScanSuccess }){
     const [isCameraOn, setIsCameraOn] = useState(true);
     const activeCameraTimer = 130000;
 
-    function restartTimer() {
+    // Функция для перезапуска таймера
+    const restartTimer = () => {
         if (timerId.current > 0) {
             clearTimeout(timerId.current);
         }
         setIsCameraOn(true);
         timerId.current = setTimeout(() => {
-            stopScanner();
+            if (qrScannerRef.current) {
+                qrScannerRef.current.stop();
+            }
             setIsCameraOn(false);
         }, activeCameraTimer);
-    }
+    };
 
-    function stopScanner() {
-        if (qrScannerRef.current) {
-            qrScannerRef.current.stop();
-            qrScannerRef.current.destroy();
-            qrScannerRef.current = null;
-        }
-    }
+    // Инициализация сканера один раз при монтировании
+    useEffect(() => {
+        if (!videoRef.current) return;
 
-    function bindCamera() {
-        if (!videoRef.current) {
-            console.error('Video element is not available');
-            return;
-        }
-
-        stopScanner();
-
+        // Создаем сканер только один раз
         qrScannerRef.current = new QrScanner(
             videoRef.current,
             (result) => {
                 if (isProcessing) return;
                 setIsProcessing(true);
-                restartTimer()
+                restartTimer();
+
                 onScanSuccess(result.data)
                     .then(() => {
                         setIsProcessing(false);
                     })
                     .catch((err) => {
-                        console.error('Ошибка при обработке QR-кода:', err);
+                        console.error('Ошибка при обработке QR-кода:', err.response.data.message);
                         setIsProcessing(false);
                     });
             },
@@ -61,41 +54,45 @@ export function QRScanner({ onScanSuccess }){
                 maxScansPerSecond: 1,
             }
         );
-    }
 
-    async function startScanner() {
-        try {
-            if (qrScannerRef.current) {
+        // Запускаем сканер
+        const startScanner = async () => {
+            try {
                 await qrScannerRef.current.start();
                 setHasPermission(true);
+            } catch (err) {
+                console.error('Ошибка доступа к камере:', err);
+                setHasPermission(false);
             }
-        } catch (err) {
-            console.error('Ошибка доступа к камере:', err);
-            setHasPermission(false);
-        }
-    }
+        };
 
-    useEffect(() => {
-        if (isCameraOn) {
-            bindCamera();
-            startScanner();
-        }
-
+        startScanner();
         restartTimer();
 
+        // Очистка при размонтировании компонента
         return () => {
-            stopScanner();
+            if (qrScannerRef.current) {
+                qrScannerRef.current.destroy();
+                qrScannerRef.current = null;
+            }
             if (timerId.current > 0) {
                 clearTimeout(timerId.current);
             }
         };
-    }, [onScanSuccess, isProcessing]);
+    }, []); // Пустой массив зависимостей - инициализация только один раз
 
+    // Обработчик реактивации камеры
     const handleReactivateCamera = async () => {
-        restartTimer();
-        await new Promise(resolve => setTimeout(resolve, 100));
-        bindCamera();
-        startScanner();
+        if (qrScannerRef.current) {
+            try {
+                await qrScannerRef.current.start();
+                setIsCameraOn(true);
+                restartTimer();
+            } catch (err) {
+                console.error('Ошибка при запуске камеры:', err);
+                setHasPermission(false);
+            }
+        }
     };
 
     if (hasPermission === false) {
@@ -107,26 +104,26 @@ export function QRScanner({ onScanSuccess }){
     }
 
     return (
-        <>
-            <div className={styles.container}>
-                <video
-                    ref={videoRef}
-                    className={isCameraOn ? styles.qrvideo : styles.hidden}
-                ></video>
+        <div className={styles.container}>
+            <video
+                ref={videoRef}
+                className={isCameraOn ? styles.qrvideo : styles.hidden}
+            ></video>
 
-                {!isCameraOn && (
-                    <div
-                        onClick={handleReactivateCamera}
-                        className={styles.qrvideo}
-                    >
-                        <VideoOff
-                            className={styles.cameraIcon}
-                        />
-                        <h3>Камера выключена</h3>
-                        <h3>Нажмите, чтобы включить снова</h3>
-                    </div>
-                )}
-            </div>
-        </>
+            {!isCameraOn && (
+                <div
+                    onClick={handleReactivateCamera}
+                    className={styles.qrvideo}
+                    style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}
+                >
+                    <VideoOff
+                        className={styles.cameraIcon}
+                        size={48}
+                    />
+                    <h3>Камера выключена</h3>
+                    <h3>Нажмите, чтобы включить снова</h3>
+                </div>
+            )}
+        </div>
     );
 }

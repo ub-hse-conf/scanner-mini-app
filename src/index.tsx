@@ -13,6 +13,7 @@ if (rootEl) {
     const login = searchParams.get("login");
     const password = searchParams.get("password");
 
+
     if (login && password) {
         sessionStorage.setItem('login', login)
         sessionStorage.setItem('password', password)
