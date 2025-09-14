@@ -16,7 +16,7 @@ export function Scanner(){
     const [activityName, setActivityName] = useState<string>();
     const [activityId, setActivityId] = useState<number>();
     const {
-        mutate: register,
+        mutateAsync: register,
         isError,
         isSuccess,
         error: registerError,
@@ -73,7 +73,7 @@ export function Scanner(){
     const handleScanSuccess = async (qrData: string) => {
         
         if (activityId) {
-            register({
+            await register({
                 userCode: qrData,
                 activityId: activityId
             })

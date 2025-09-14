@@ -10,7 +10,7 @@ export function useRegisterUser() {
     return useMutation<void, Error, registerProps>({
         mutationKey: ["registerUser"],
         mutationFn: async ({activityId, userCode}) => {
-            return await api.post(`/api/activities/${activityId}/visit/${userCode}`);
+            await api.post(`/api/activities/${activityId}/visit/${userCode}`);
         }
     })
 }
