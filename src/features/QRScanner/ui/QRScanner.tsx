@@ -10,7 +10,7 @@ export function QRScanner({ onScanSuccess }) {
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(true);
-    const activeCameraTimer = 130000;
+    const activeCameraTimer = 30000;
 
     // Функция для перезапуска таймера
     const restartTimer = () => {

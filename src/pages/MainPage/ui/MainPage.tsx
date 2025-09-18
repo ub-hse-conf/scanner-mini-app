@@ -76,7 +76,7 @@ export function MainPage() {
                                         )).map((activity: Activity, index:number) => (
                                             <Button
                                                 key={index}
-                                                color={"yellow"}
+                                                color={"green"}
                                                 onClick={() => {
                                                     navigate(`/scanner/${activity.id}`)
                                                 }}

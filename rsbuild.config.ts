@@ -15,7 +15,7 @@ export default defineConfig({
         template: './src/index.html',
         title: 'Моя Telegram Mini-App',
         meta: {
-            description: 'Данил любит пажылой изюм',
+            description: 'Сканер QR-кодов',
         },
         templateParameters: {
             appName: 'QR-scanner',
